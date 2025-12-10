@@ -58,6 +58,43 @@ describe('Character', () => {
       expect(character.name).toBe('1234567890')
     })
   })
+
+  describe('методы персонажа', () => {
+    test('levelUp повышает уровень, атаку, защиту и восстанавливает здоровье', () => {
+      const bowerman = new Bowerman('Legolas')
+      bowerman.damage(10) // уменьшаем здоровье, чтобы проверить восстановление
+      bowerman.levelUp()
+
+      expect(bowerman.level).toBe(2)
+      expect(bowerman.attack).toBeCloseTo(25 * 1.2)
+      expect(bowerman.defence).toBeCloseTo(25 * 1.2)
+      expect(bowerman.health).toBe(100)
+    })
+
+    test('levelUp выбрасывает ошибку, если персонаж мертв', () => {
+      const bowerman = new Bowerman('Legolas')
+      bowerman.health = 0
+      expect(() => bowerman.levelUp()).toThrow('нельзя повысить уровень умершего')
+    })
+
+    test('damage уменьшает здоровье с учетом защиты и не опускает ниже нуля', () => {
+      const bowerman = new Bowerman('Legolas')
+      bowerman.damage(40) // 40 * (1 - 0.25) = 30
+      expect(bowerman.health).toBeCloseTo(70)
+
+      bowerman.damage(500)
+      expect(bowerman.health).toBe(0)
+    })
+
+    test('damage ничего не делает для мертвого персонажа', () => {
+      const bowerman = new Bowerman('Legolas')
+      bowerman.health = 0
+
+      bowerman.damage(50)
+
+      expect(bowerman.health).toBe(0)
+    })
+  })
 })
 
 describe('Bowerman', () => {
